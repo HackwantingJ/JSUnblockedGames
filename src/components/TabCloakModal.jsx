@@ -1,14 +1,7 @@
 import React from 'react';
-import { X, ShieldAlert, Check, Sparkles } from 'lucide-react';
+import { X, ShieldAlert, Check } from 'lucide-react';
 
-export interface CloakPreset {
-  id: string;
-  name: string;
-  title: string;
-  iconUrl: string;
-}
-
-export const CLOAK_PRESETS: CloakPreset[] = [
+export const CLOAK_PRESETS = [
   {
     id: 'default',
     name: 'Normal (Vault Arcade)',
@@ -47,15 +40,7 @@ export const CLOAK_PRESETS: CloakPreset[] = [
   },
 ];
 
-interface TabCloakModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  activeCloak: string;
-  onSelectCloak: (preset: CloakPreset) => void;
-  onTriggerPanic: () => void;
-}
-
-export const TabCloakModal: React.FC<TabCloakModalProps> = ({
+export const TabCloakModal = ({
   isOpen,
   onClose,
   activeCloak,
@@ -113,8 +98,7 @@ export const TabCloakModal: React.FC<TabCloakModalProps> = ({
                       referrerPolicy="no-referrer"
                       className="w-5 h-5 object-contain"
                       onError={(e) => {
-                        // Fallback icon if image doesn't load
-                        (e.target as HTMLElement).style.display = 'none';
+                        e.target.style.display = 'none';
                       }}
                     />
                     <div>

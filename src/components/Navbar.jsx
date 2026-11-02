@@ -1,16 +1,7 @@
 import React from 'react';
 import { Gamepad2, ShieldAlert, Code2, Plus } from 'lucide-react';
 
-interface NavbarProps {
-  activeCategory: string;
-  onSelectCategory: (cat: string) => void;
-  onOpenCloak: () => void;
-  onOpenAddGame: () => void;
-  onOpenJsonView: () => void;
-  onTriggerPanic: () => void;
-}
-
-export const Navbar: React.FC<NavbarProps> = ({
+export const Navbar = ({
   activeCategory,
   onSelectCategory,
   onOpenCloak,

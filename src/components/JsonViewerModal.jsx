@@ -1,14 +1,7 @@
 import React, { useState } from 'react';
-import { X, Code, Copy, Check, Download, FileJson } from 'lucide-react';
-import { GameItem } from '../types/game';
+import { X, Copy, Check, Download, FileJson } from 'lucide-react';
 
-interface JsonViewerModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  games: GameItem[];
-}
-
-export const JsonViewerModal: React.FC<JsonViewerModalProps> = ({
+export const JsonViewerModal = ({
   isOpen,
   onClose,
   games,

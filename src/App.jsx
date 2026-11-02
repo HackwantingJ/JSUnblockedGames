@@ -5,28 +5,24 @@ import {
   Gamepad2,
   Heart,
   SlidersHorizontal,
-  Flame,
-  Code2,
-  ExternalLink,
-  ShieldCheck
+  Code2
 } from 'lucide-react';
-import { GameItem } from './types/game';
-import { DEFAULT_GAMES_DATA } from './data/defaultGames';
-import { Navbar } from './components/Navbar';
-import { GameCard } from './components/GameCard';
-import { GamePlayer } from './components/GamePlayer';
-import { AddGameModal } from './components/AddGameModal';
-import { JsonViewerModal } from './components/JsonViewerModal';
-import { TabCloakModal, CLOAK_PRESETS, CloakPreset } from './components/TabCloakModal';
-import { PanicScreen } from './components/PanicScreen';
+import { DEFAULT_GAMES_DATA } from './data/defaultGames.js';
+import { Navbar } from './components/Navbar.jsx';
+import { GameCard } from './components/GameCard.jsx';
+import { GamePlayer } from './components/GamePlayer.jsx';
+import { AddGameModal } from './components/AddGameModal.jsx';
+import { JsonViewerModal } from './components/JsonViewerModal.jsx';
+import { TabCloakModal } from './components/TabCloakModal.jsx';
+import { PanicScreen } from './components/PanicScreen.jsx';
 
 export default function App() {
   // Games state (defaults + any saved custom games)
-  const [games, setGames] = useState<GameItem[]>(() => {
+  const [games, setGames] = useState(() => {
     try {
       const savedCustom = localStorage.getItem('vault_games_custom');
       if (savedCustom) {
-        const customItems: GameItem[] = JSON.parse(savedCustom);
+        const customItems = JSON.parse(savedCustom);
         return [...DEFAULT_GAMES_DATA.games, ...customItems];
       }
     } catch (e) {
@@ -36,10 +32,10 @@ export default function App() {
   });
 
   // Active game in iframe player
-  const [activeGame, setActiveGame] = useState<GameItem | null>(null);
+  const [activeGame, setActiveGame] = useState(null);
 
   // Favorites
-  const [favorites, setFavorites] = useState<string[]>(() => {
+  const [favorites, setFavorites] = useState(() => {
     try {
       const savedFavs = localStorage.getItem('vault_unblocked_favorites');
       return savedFavs ? JSON.parse(savedFavs) : ['snake-retro', 'game-2048', 'block-stack'];
@@ -49,20 +45,20 @@ export default function App() {
   });
 
   // Filter & Search states
-  const [selectedCategory, setSelectedCategory] = useState<string>('All');
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [sortBy, setSortBy] = useState<'popular' | 'rating' | 'alphabetical'>('popular');
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortBy, setSortBy] = useState('popular');
 
   // Modals state
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [isJsonOpen, setIsJsonOpen] = useState(false);
   const [isCloakOpen, setIsCloakOpen] = useState(false);
   const [isPanicActive, setIsPanicActive] = useState(false);
-  const [activeCloakId, setActiveCloakId] = useState<string>('default');
+  const [activeCloakId, setActiveCloakId] = useState('default');
 
   // Save favorites
-  const toggleFavorite = (id: string, e: React.MouseEvent) => {
-    e.stopPropagation?.();
+  const toggleFavorite = (id, e) => {
+    if (e && e.stopPropagation) e.stopPropagation();
     setFavorites((prev) => {
       const next = prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id];
       localStorage.setItem('vault_unblocked_favorites', JSON.stringify(next));
@@ -71,7 +67,7 @@ export default function App() {
   };
 
   // Add custom game
-  const handleAddGame = (newGame: GameItem) => {
+  const handleAddGame = (newGame) => {
     setGames((prev) => {
       const updated = [newGame, ...prev];
       const customOnly = updated.filter((g) => g.isCustom);
@@ -92,12 +88,12 @@ export default function App() {
   };
 
   // Tab cloaking handler
-  const handleSelectCloak = (preset: CloakPreset) => {
+  const handleSelectCloak = (preset) => {
     setActiveCloakId(preset.id);
     document.title = preset.title;
 
     // Update favicon
-    let link: HTMLLinkElement | null = document.querySelector("link[rel*='icon']");
+    let link = document.querySelector("link[rel*='icon']");
     if (!link) {
       link = document.createElement('link');
       link.rel = 'icon';
@@ -108,7 +104,7 @@ export default function App() {
 
   // Global Panic key listener (` or Tilde)
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
+    const handleKeyDown = (e) => {
       if (e.key === '`' || e.key === '~') {
         e.preventDefault();
         setIsPanicActive((prev) => !prev);
@@ -135,7 +131,7 @@ export default function App() {
           const matchTitle = game.title.toLowerCase().includes(q);
           const matchDesc = game.description.toLowerCase().includes(q);
           const matchCat = game.category.toLowerCase().includes(q);
-          const matchTag = game.tags.some((t) => t.toLowerCase().includes(q));
+          const matchTag = game.tags?.some((t) => t.toLowerCase().includes(q));
           return matchTitle || matchDesc || matchCat || matchTag;
         }
 
@@ -258,7 +254,7 @@ export default function App() {
               <span>Sort:</span>
               <select
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as any)}
+                onChange={(e) => setSortBy(e.target.value)}
                 className="bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-sky-500"
               >
                 <option value="popular">Most Played</option>

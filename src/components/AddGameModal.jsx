@@ -1,14 +1,7 @@
 import React, { useState } from 'react';
 import { X, Plus, AlertCircle } from 'lucide-react';
-import { GameItem } from '../types/game';
 
-interface AddGameModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onAddGame: (newGame: GameItem) => void;
-}
-
-export const AddGameModal: React.FC<AddGameModalProps> = ({
+export const AddGameModal = ({
   isOpen,
   onClose,
   onAddGame,
@@ -17,11 +10,11 @@ export const AddGameModal: React.FC<AddGameModalProps> = ({
   const [category, setCategory] = useState('Arcade');
   const [description, setDescription] = useState('');
   const [embedInput, setEmbedInput] = useState('');
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(null);
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     setError(null);
 
@@ -54,7 +47,7 @@ export const AddGameModal: React.FC<AddGameModalProps> = ({
 
     const id = `custom-${title.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${Date.now().toString(36)}`;
 
-    const newGame: GameItem = {
+    const newGame = {
       id,
       title: title.trim(),
       category,

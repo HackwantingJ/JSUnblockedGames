@@ -1,22 +1,14 @@
 import React from 'react';
 import { Play, Heart, Star, Flame } from 'lucide-react';
-import { GameItem } from '../types/game';
 
-interface GameCardProps {
-  game: GameItem;
-  isFavorite: boolean;
-  onPlay: (game: GameItem) => void;
-  onToggleFavorite: (id: string, e: React.MouseEvent) => void;
-}
-
-export const GameCard: React.FC<GameCardProps> = ({
+export const GameCard = ({
   game,
   isFavorite,
   onPlay,
   onToggleFavorite,
 }) => {
   // Visual gradient accents matching theme
-  const getGradient = (accent?: string) => {
+  const getGradient = (accent) => {
     switch (accent) {
       case 'emerald':
         return 'from-emerald-950/60 to-slate-900 border-emerald-500/20 group-hover:border-emerald-500/50';
@@ -43,7 +35,7 @@ export const GameCard: React.FC<GameCardProps> = ({
     }
   };
 
-  const getAccentColor = (accent?: string) => {
+  const getAccentColor = (accent) => {
     switch (accent) {
       case 'emerald': return 'text-emerald-400 bg-emerald-500/10';
       case 'sky': return 'text-sky-400 bg-sky-500/10';
@@ -74,7 +66,7 @@ export const GameCard: React.FC<GameCardProps> = ({
             <span aria-hidden="true">·</span>
             <span className="flex items-center gap-0.5 text-amber-300 font-mono">
               <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
-              {game.rating.toFixed(1)}
+              {Number(game.rating).toFixed(1)}
             </span>
             <span aria-hidden="true">·</span>
             <span className="font-mono text-slate-400 tabular-nums">

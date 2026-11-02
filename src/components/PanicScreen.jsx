@@ -1,17 +1,13 @@
 import React from 'react';
-import { EyeOff, ArrowLeft } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 
-interface PanicScreenProps {
-  onDismiss: () => void;
-}
-
-export const PanicScreen: React.FC<PanicScreenProps> = ({ onDismiss }) => {
+export const PanicScreen = ({ onDismiss }) => {
   return (
     <div className="fixed inset-0 z-50 bg-white text-slate-800 font-serif overflow-y-auto p-8 sm:p-14 select-text">
       {/* Discreet top-right resume bar */}
       <div className="max-w-4xl mx-auto flex justify-between items-center pb-6 mb-8 border-b border-slate-200">
         <div className="font-sans text-xs text-slate-500 uppercase tracking-widest">
-          AP Biology & Biochemistry · Unit 4 Notes
+          AP Biology &amp; Biochemistry · Unit 4 Notes
         </div>
         <button
           onClick={onDismiss}

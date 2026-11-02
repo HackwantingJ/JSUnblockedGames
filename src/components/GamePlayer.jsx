@@ -12,16 +12,8 @@ import {
   Keyboard,
   Info
 } from 'lucide-react';
-import { GameItem } from '../types/game';
 
-interface GamePlayerProps {
-  game: GameItem;
-  isFavorite: boolean;
-  onClose: () => void;
-  onToggleFavorite: (id: string, e: React.MouseEvent) => void;
-}
-
-export const GamePlayer: React.FC<GamePlayerProps> = ({
+export const GamePlayer = ({
   game,
   isFavorite,
   onClose,
@@ -31,8 +23,8 @@ export const GamePlayer: React.FC<GamePlayerProps> = ({
   const [showJsonCode, setShowJsonCode] = useState(false);
   const [copiedCode, setCopiedCode] = useState(false);
   const [iframeKey, setIframeKey] = useState(0);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const containerRef = useRef(null);
+  const iframeRef = useRef(null);
 
   // Fullscreen support
   const toggleFullscreen = () => {
@@ -62,7 +54,7 @@ export const GamePlayer: React.FC<GamePlayerProps> = ({
 
   // Keyboard shortcut: Escape closes theater or game if not in fullscreen
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
+    const handleKeyDown = (e) => {
       if (e.key === 'Escape' && !document.fullscreenElement) {
         onClose();
       }
@@ -104,7 +96,7 @@ export const GamePlayer: React.FC<GamePlayerProps> = ({
           </button>
 
           <button
-            onClick={() => onToggleFavorite(game.id, {} as React.MouseEvent)}
+            onClick={() => onToggleFavorite(game.id, {})}
             title={isFavorite ? 'Remove favorite' : 'Add favorite'}
             className="p-2 text-slate-400 hover:text-rose-400 hover:bg-slate-800 rounded-lg transition-colors focus:outline-none"
           >
@@ -204,7 +196,7 @@ export const GamePlayer: React.FC<GamePlayerProps> = ({
           <div className="flex items-center gap-3 text-xs text-slate-400">
             <span className="font-mono tabular-nums">{game.plays.toLocaleString()} Plays</span>
             <span>·</span>
-            <span className="text-amber-400 font-mono">★ {game.rating.toFixed(2)}</span>
+            <span className="text-amber-400 font-mono">★ {Number(game.rating).toFixed(2)}</span>
             <button
               onClick={() => setShowJsonCode(!showJsonCode)}
               className="text-sky-400 hover:text-sky-300 underline underline-offset-2 flex items-center gap-1"
