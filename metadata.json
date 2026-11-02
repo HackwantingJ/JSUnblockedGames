@@ -2,5 +2,7 @@
   "name": "Vault Arcade - Unblocked Games Hub",
   "description": "Fast, lightweight unblocked games portal featuring browser arcade classics loaded via JSON iframe architecture.",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }
