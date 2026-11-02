@@ -1,5 +1,5 @@
 import React from 'react';
-import { Gamepad2, ShieldAlert, Code2, Plus } from 'lucide-react';
+import { Gamepad2, ShieldAlert, Code2, Plus, Calculator as CalcIcon } from 'lucide-react';
 
 export const Navbar = ({
   activeCategory,
@@ -8,6 +8,7 @@ export const Navbar = ({
   onOpenAddGame,
   onOpenJsonView,
   onTriggerPanic,
+  onLock,
 }) => {
   return (
     <header className="sticky top-0 z-40 bg-slate-950/85 backdrop-blur-md border-b border-slate-800/80 px-4 sm:px-8 py-3.5 transition-colors">
@@ -73,6 +74,16 @@ export const Navbar = ({
           >
             <ShieldAlert className="w-3.5 h-3.5 text-amber-400" />
             <span className="hidden sm:inline">Cloak Tab</span>
+          </button>
+
+          {/* Calculator Lock */}
+          <button
+            onClick={onLock}
+            title="Lock back to Calculator disguise"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-300 bg-slate-900 border border-slate-800 rounded-lg hover:bg-slate-800 hover:text-white transition-colors whitespace-nowrap shrink-0"
+          >
+            <CalcIcon className="w-3.5 h-3.5 text-sky-400" />
+            <span className="hidden sm:inline">Lock</span>
           </button>
 
           <button

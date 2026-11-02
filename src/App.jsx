@@ -15,8 +15,12 @@ import { AddGameModal } from './components/AddGameModal.jsx';
 import { JsonViewerModal } from './components/JsonViewerModal.jsx';
 import { TabCloakModal } from './components/TabCloakModal.jsx';
 import { PanicScreen } from './components/PanicScreen.jsx';
+import { Calculator } from './components/Calculator.jsx';
 
 export default function App() {
+  // Calculator Vault disguise state (default: locked as Calculator)
+  const [isUnlocked, setIsUnlocked] = useState(false);
+
   // Games state (defaults + any saved custom games)
   const [games, setGames] = useState(() => {
     try {
@@ -56,6 +60,34 @@ export default function App() {
   const [isPanicActive, setIsPanicActive] = useState(false);
   const [activeCloakId, setActiveCloakId] = useState('default');
 
+  // Manage tab title & favicon based on locked vs unlocked
+  useEffect(() => {
+    if (!isUnlocked) {
+      document.title = 'Calculator - Standard & Scientific';
+      let link = document.querySelector("link[rel*='icon']");
+      if (link) {
+        link.href = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23475569"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 4v2H7V7h10zm-8 4h2v2H9v-2zm-2 0H5v-2h2v2zm0 4H5v-2h2v2zm0 4H5v-2h2v2zm4 0H9v-2h2v2zm0-4H9v-2h2v2zm4 4h-2v-6h2v6zm4 0h-2v-2h2v2zm0-4h-2v-2h2v2z"/></svg>';
+      }
+    } else {
+      document.title = 'Vault Arcade - Unblocked Games Hub';
+      let link = document.querySelector("link[rel*='icon']");
+      if (link) {
+        link.href = './favicon.svg';
+      }
+    }
+  }, [isUnlocked]);
+
+  // Unlock handler when 6692 is entered
+  const handleUnlock = () => {
+    setIsUnlocked(true);
+  };
+
+  // Lock back to calculator
+  const handleLock = () => {
+    setIsUnlocked(false);
+    setActiveGame(null);
+  };
+
   // Save favorites
   const toggleFavorite = (id, e) => {
     if (e && e.stopPropagation) e.stopPropagation();
@@ -83,7 +115,6 @@ export default function App() {
     const randomIndex = Math.floor(Math.random() * games.length);
     const chosen = games[randomIndex];
     setActiveGame(chosen);
-    // Smooth scroll to top player
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -92,7 +123,6 @@ export default function App() {
     setActiveCloakId(preset.id);
     document.title = preset.title;
 
-    // Update favicon
     let link = document.querySelector("link[rel*='icon']");
     if (!link) {
       link = document.createElement('link');
@@ -118,14 +148,12 @@ export default function App() {
   const filteredGames = useMemo(() => {
     return games
       .filter((game) => {
-        // Category filter
         if (selectedCategory === 'Favorites') {
           if (!favorites.includes(game.id)) return false;
         } else if (selectedCategory !== 'All' && game.category !== selectedCategory) {
           return false;
         }
 
-        // Search query
         if (searchQuery.trim()) {
           const q = searchQuery.toLowerCase().trim();
           const matchTitle = game.title.toLowerCase().includes(q);
@@ -144,14 +172,20 @@ export default function App() {
       });
   }, [games, selectedCategory, searchQuery, sortBy, favorites]);
 
-  // Panic screen overrides
+  // 1. Calculator Disguise (Default when not unlocked)
+  if (!isUnlocked) {
+    return <Calculator onUnlock={handleUnlock} />;
+  }
+
+  // 2. Panic screen overrides
   if (isPanicActive) {
     return <PanicScreen onDismiss={() => setIsPanicActive(false)} />;
   }
 
+  // 3. Vault Arcade Portal (Unlocked)
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col antialiased">
-      {/* Top Bar Contract Navigation */}
+      {/* Top Bar Navigation */}
       <Navbar
         activeCategory={selectedCategory}
         onSelectCategory={(cat) => {
@@ -162,6 +196,7 @@ export default function App() {
         onOpenAddGame={() => setIsAddOpen(true)}
         onOpenJsonView={() => setIsJsonOpen(true)}
         onTriggerPanic={() => setIsPanicActive(true)}
+        onLock={handleLock}
       />
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-8 py-6">
@@ -182,7 +217,7 @@ export default function App() {
             <div className="relative z-10 max-w-2xl">
               
               <div className="flex items-center gap-2 text-xs font-semibold text-sky-400 mb-3 tracking-wide">
-                <span>LOCAL IFRAME ENGINE</span>
+                <span>CALCULATOR VAULT UNLOCKED</span>
                 <span aria-hidden="true">·</span>
                 <span>STORED IN GAMES.JSON</span>
                 <span aria-hidden="true">·</span>
@@ -212,6 +247,13 @@ export default function App() {
                 >
                   <Code2 className="w-4 h-4 text-sky-400" />
                   <span>Inspect JSON Database</span>
+                </button>
+
+                <button
+                  onClick={handleLock}
+                  className="px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-amber-300 hover:text-amber-200 font-medium text-xs rounded-xl border border-slate-800 transition-colors flex items-center gap-2"
+                >
+                  <span>Re-Lock Calculator</span>
                 </button>
               </div>
 
@@ -366,6 +408,12 @@ export default function App() {
               className="hover:text-amber-400 transition-colors"
             >
               Tab Cloak Settings
+            </button>
+            <button
+              onClick={handleLock}
+              className="hover:text-amber-400 transition-colors"
+            >
+              Lock to Calculator
             </button>
             <button
               onClick={() => setIsAddOpen(true)}

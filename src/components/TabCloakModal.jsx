@@ -6,37 +6,37 @@ export const CLOAK_PRESETS = [
     id: 'default',
     name: 'Normal (Vault Arcade)',
     title: 'Vault Arcade - Unblocked Games Hub',
-    iconUrl: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%2338bdf8"><path d="M6 11h4V7H6v4zm8-4v4h4V7h-4zm-8 6h4v4H6v-4zm8 0h4v4h-4v-4z"/></svg>',
+    iconUrl: '/favicon.svg',
   },
   {
     id: 'classroom',
     name: 'Google Classroom',
     title: 'Classes',
-    iconUrl: 'https://ssl.gstatic.com/classroom/favicon.png',
+    iconUrl: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" rx="8" fill="%232e7d32"/><path d="M24 14c-4.42 0-8 3.58-8 8s3.58 8 8 8 8-3.58 8-8-3.58-8-8-8zm0 20c-5.33 0-16 2.67-16 8v2h32v-2c0-5.33-10.67-8-16-8z" fill="%23fff"/></svg>',
   },
   {
     id: 'drive',
     name: 'Google Drive',
     title: 'My Drive - Google Drive',
-    iconUrl: 'https://ssl.gstatic.com/images/branding/product/1x/drive_2020q4_32dp.png',
+    iconUrl: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><path fill="%23FFC107" d="M17 6L31 6 45 30 31 30z"/><path fill="%231E88E5" d="M9.5 43L3.5 32.5 17 6 24 18z"/><path fill="%234CAF50" d="M31 30L45 30 38.5 43 14 43z"/></svg>',
   },
   {
     id: 'docs',
     name: 'Google Docs',
     title: 'Untitled document - Google Docs',
-    iconUrl: 'https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico',
+    iconUrl: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" rx="8" fill="%234285f4"/><path d="M14 12h14l8 8v16H14z" fill="%23fff"/><path d="M28 12v8h8z" fill="%23c6dafc"/><path d="M18 24h12v2H18zm0 4h12v2H18zm0 4h8v2H18z" fill="%234285f4"/></svg>',
   },
   {
     id: 'wikipedia',
     name: 'Wikipedia',
     title: 'Wikipedia, the free encyclopedia',
-    iconUrl: 'https://en.wikipedia.org/static/favicon/wikipedia.ico',
+    iconUrl: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" rx="8" fill="%23ffffff"/><text x="24" y="34" font-family="serif" font-size="30" font-weight="bold" text-anchor="middle" fill="%23000000">W</text></svg>',
   },
   {
     id: 'canvas',
     name: 'Canvas LMS',
     title: 'Dashboard - Canvas',
-    iconUrl: 'https://du11hjcvx0uqb.cloudfront.net/dist/images/favicon-e10d657a73.ico',
+    iconUrl: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><circle cx="24" cy="24" r="20" fill="%23e63946"/><circle cx="24" cy="24" r="8" fill="%23fff"/></svg>',
   },
 ];
 
@@ -60,7 +60,7 @@ export const TabCloakModal = ({
               <ShieldAlert className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-white">Tab Cloaking & Stealth</h3>
+              <h3 className="text-base font-bold text-white">Tab Cloaking &amp; Stealth</h3>
               <p className="text-xs text-slate-400">Disguise browser tab title and favicon</p>
             </div>
           </div>
@@ -95,11 +95,7 @@ export const TabCloakModal = ({
                     <img
                       src={preset.iconUrl}
                       alt={preset.name}
-                      referrerPolicy="no-referrer"
-                      className="w-5 h-5 object-contain"
-                      onError={(e) => {
-                        e.target.style.display = 'none';
-                      }}
+                      className="w-5 h-5 object-contain rounded"
                     />
                     <div>
                       <div className="text-xs font-semibold">{preset.name}</div>
