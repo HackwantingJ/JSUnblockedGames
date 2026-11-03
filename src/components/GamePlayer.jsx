@@ -63,6 +63,18 @@ export const GamePlayer = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
 
+  // Sanitize and resolve iframe source path relatively for GitHub Pages subpaths
+  const resolveIframeSrc = (src) => {
+    if (!src) return '';
+    if (src.startsWith('http://') || src.startsWith('https://')) {
+      return src;
+    }
+    if (src.startsWith('/games/')) {
+      return '.' + src;
+    }
+    return src;
+  };
+
   return (
     <div
       ref={containerRef}
@@ -80,7 +92,7 @@ export const GamePlayer = ({
               <span className="text-xs font-normal text-slate-400">({game.category})</span>
             </h2>
             <p className="text-xs text-slate-400 font-mono truncate">
-              Loaded via iframe src: <span className="text-sky-400">{game.iframeSrc}</span>
+              Loaded via iframe src: <span className="text-sky-400">{resolveIframeSrc(game.iframeSrc)}</span>
             </p>
           </div>
         </div>
@@ -152,10 +164,10 @@ export const GamePlayer = ({
         <iframe
           key={iframeKey}
           ref={iframeRef}
-          src={game.iframeSrc}
+          src={resolveIframeSrc(game.iframeSrc)}
           title={game.title}
           className="w-full h-full border-0"
-          allow="fullscreen; autoplay; gamepad"
+          allow="fullscreen; autoplay; gamepad; pointer-lock"
           allowFullScreen
           loading="eager"
         />
@@ -193,7 +205,18 @@ export const GamePlayer = ({
           </div>
 
           {/* Quick Info & JSON trigger */}
-          <div className="flex items-center gap-3 text-xs text-slate-400">
+          <div className="flex flex-wrap items-center gap-3 text-xs text-slate-400">
+            {game.iframeSrc?.includes('nite.games') && (
+              <a
+                href={`https://nite.games/game/${game.iframeSrc.split('/embed/')[1] || ''}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-xs text-sky-400 hover:text-sky-300 font-medium bg-sky-950/60 hover:bg-sky-900/60 px-2.5 py-1 rounded-md border border-sky-800/60 transition-colors"
+              >
+                <span>Play on Nite.Games</span>
+                <ExternalLink className="w-3.5 h-3.5" />
+              </a>
+            )}
             <span className="font-mono tabular-nums">{game.plays.toLocaleString()} Plays</span>
             <span>·</span>
             <span className="text-amber-400 font-mono">★ {Number(game.rating).toFixed(2)}</span>

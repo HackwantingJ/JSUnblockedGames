@@ -32,7 +32,7 @@ export default defineConfig(() => {
           return html;
         },
         closeBundle() {
-          // Keep root assets in sync so GitHub Pages can serve them directly
+          // Keep root assets, games, and data in sync so GitHub Pages can serve them directly
           try {
             const distAssets = path.resolve(__dirname, 'dist/assets');
             const rootAssets = path.resolve(__dirname, 'assets');
@@ -49,6 +49,26 @@ export default defineConfig(() => {
                   fs.copyFileSync(path.join(distAssets, file), path.join(rootAssets, 'app.css'));
                   fs.copyFileSync(path.join(distAssets, file), path.join(rootAssets, 'index.css'));
                 }
+              }
+            }
+
+            // Sync games folder to root
+            const publicGames = path.resolve(__dirname, 'public/games');
+            const rootGames = path.resolve(__dirname, 'games');
+            if (fs.existsSync(publicGames)) {
+              if (!fs.existsSync(rootGames)) fs.mkdirSync(rootGames, { recursive: true });
+              for (const g of fs.readdirSync(publicGames)) {
+                fs.copyFileSync(path.join(publicGames, g), path.join(rootGames, g));
+              }
+            }
+
+            // Sync data folder to root
+            const publicData = path.resolve(__dirname, 'public/data');
+            const rootData = path.resolve(__dirname, 'data');
+            if (fs.existsSync(publicData)) {
+              if (!fs.existsSync(rootData)) fs.mkdirSync(rootData, { recursive: true });
+              for (const d of fs.readdirSync(publicData)) {
+                fs.copyFileSync(path.join(publicData, d), path.join(rootData, d));
               }
             }
           } catch (e) {

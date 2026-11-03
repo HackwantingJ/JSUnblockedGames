@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Orbital Energy Clicker</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+    body {
+      background: #090d16;
+      color: #f8fafc;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow: hidden;
+      padding: 16px;
+    }
+    .game-container {
+      display: flex;
+      flex-direction: row;
+      gap: 24px;
+      width: 100%;
+      max-width: 600px;
+      background: #020617;
+      border: 2px solid #1e293b;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+    }
+    .click-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .counter {
+      font-size: 32px;
+      font-weight: 800;
+      color: #38bdf8;
+      font-family: monospace;
+      margin-bottom: 2px;
+    }
+    .rate {
+      font-size: 13px;
+      color: #94a3b8;
+      margin-bottom: 24px;
+    }
+    .orb-button {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #38bdf8, #0369a1, #0f172a);
+      border: 4px solid #38bdf8;
+      box-shadow: 0 0 35px rgba(56, 189, 248, 0.45);
+      cursor: pointer;
+      outline: none;
+      transition: transform 0.08s ease-out;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+    }
+    .orb-button:active {
+      transform: scale(0.92);
+      box-shadow: 0 0 50px rgba(56, 189, 248, 0.7);
+    }
+    .store-area {
+      flex: 1.1;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 380px;
+      overflow-y: auto;
+    }
+    .store-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+    .item-card {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      padding: 10px 14px;
+      border-radius: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .item-card:hover {
+      background: #1e293b;
+      border-color: #38bdf8;
+    }
+    .item-card.disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      border-color: #1e293b;
+    }
+    .item-name { font-weight: 600; font-size: 14px; }
+    .item-desc { font-size: 11px; color: #94a3b8; }
+    .item-cost { font-size: 12px; font-weight: bold; color: #fbbf24; font-family: monospace; }
+    .item-count { font-size: 14px; font-weight: bold; color: #38bdf8; margin-left: 8px; }
+    .float-text {
+      position: absolute;
+      color: #38bdf8;
+      font-weight: bold;
+      font-size: 16px;
+      pointer-events: none;
+      animation: floatUp 0.8s ease-out forwards;
+    }
+    @keyframes floatUp {
+      0% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-40px); }
+    }
+    @media (max-width: 520px) {
+      .game-container { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <div class="click-area" id="clickArea">
+      <div id="counter" class="counter">0</div>
+      <div id="rate" class="rate">0 Watts / sec</div>
+      <button class="orb-button" id="orbBtn">⚡</button>
+    </div>
+
+    <div class="store-area">
+      <div class="store-title">Generators & Upgrades</div>
+      <div id="upgrades"></div>
+    </div>
+  </div>
+
+  <script>
+    let energy = parseInt(localStorage.getItem('unblocked_energy_pts') || '0', 10);
+    const counterEl = document.getElementById('counter');
+    const rateEl = document.getElementById('rate');
+    const orbBtn = document.getElementById('orbBtn');
+    const clickArea = document.getElementById('clickArea');
+    const upgradesEl = document.getElementById('upgrades');
+
+    const ITEMS = [
+      { id: 'tap', name: 'Nano Conductor', desc: '+1 Energy per tap', cost: 15, count: 0, type: 'click', power: 1 },
+      { id: 'bot', name: 'Auto Sparker', desc: '+2 Watts / sec', cost: 50, count: 0, type: 'auto', power: 2 },
+      { id: 'solar', name: 'Solar Relay', desc: '+10 Watts / sec', cost: 280, count: 0, type: 'auto', power: 10 },
+      { id: 'plasma', name: 'Plasma Generator', desc: '+50 Watts / sec', cost: 1200, count: 0, type: 'auto', power: 50 },
+      { id: 'quantum', name: 'Quantum Core', desc: '+250 Watts / sec', cost: 6000, count: 0, type: 'auto', power: 250 }
+    ];
+
+    // Load saved counts
+    ITEMS.forEach(item => {
+      const saved = localStorage.getItem('unblocked_item_' + item.id);
+      if (saved) {
+        item.count = parseInt(saved, 10);
+        item.cost = Math.floor(item.cost * Math.pow(1.15, item.count));
+      }
+    });
+
+    // Sound FX
+    const audioCtx = window.AudioContext ? new (window.AudioContext || window.webkitAudioContext)() : null;
+    function playZap(freq = 520) {
+      if (!audioCtx) return;
+      try {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.05);
+      } catch (e) {}
+    }
+
+    function getClickPower() {
+      const tapItem = ITEMS.find(i => i.id === 'tap');
+      return 1 + (tapItem.count * tapItem.power);
+    }
+
+    function getAutoRate() {
+      return ITEMS.filter(i => i.type === 'auto').reduce((sum, item) => sum + item.count * item.power, 0);
+    }
+
+    function renderStore() {
+      upgradesEl.innerHTML = '';
+      ITEMS.forEach(item => {
+        const canBuy = energy >= item.cost;
+        const card = document.createElement('div');
+        card.className = `item-card ${canBuy ? '' : 'disabled'}`;
+        card.innerHTML = `
+          <div>
+            <div class="item-name">${item.name} <span class="item-count">×${item.count}</span></div>
+            <div class="item-desc">${item.desc}</div>
+          </div>
+          <div class="item-cost">${item.cost.toLocaleString()} ⚡</div>
+        `;
+        card.onclick = () => buyItem(item);
+        upgradesEl.appendChild(card);
+      });
+    }
+
+    function buyItem(item) {
+      if (energy >= item.cost) {
+        energy -= item.cost;
+        item.count++;
+        item.cost = Math.floor(item.cost * 1.15);
+        localStorage.setItem('unblocked_item_' + item.id, item.count);
+        playZap(740);
+        updateDisplay();
+      }
+    }
+
+    function updateDisplay() {
+      counterEl.textContent = Math.floor(energy).toLocaleString();
+      rateEl.textContent = `${getAutoRate().toLocaleString()} Watts / sec`;
+      renderStore();
+      localStorage.setItem('unblocked_energy_pts', Math.floor(energy));
+    }
+
+    function spawnFloatText(text, x, y) {
+      const span = document.createElement('span');
+      span.className = 'float-text';
+      span.textContent = `+${text}`;
+      span.style.left = `${x}px`;
+      span.style.top = `${y}px`;
+      clickArea.appendChild(span);
+      setTimeout(() => span.remove(), 800);
+    }
+
+    orbBtn.addEventListener('click', e => {
+      const p = getClickPower();
+      energy += p;
+      playZap(440 + Math.random() * 80);
+      const rect = clickArea.getBoundingClientRect();
+      const x = e.clientX - rect.left - 15;
+      const y = e.clientY - rect.top - 20;
+      spawnFloatText(p, x, y);
+      updateDisplay();
+    });
+
+    setInterval(() => {
+      const rate = getAutoRate();
+      if (rate > 0) {
+        energy += rate / 10;
+        counterEl.textContent = Math.floor(energy).toLocaleString();
+      }
+    }, 100);
+
+    setInterval(() => {
+      localStorage.setItem('unblocked_energy_pts', Math.floor(energy));
+      renderStore();
+    }, 1000);
+
+    updateDisplay();
+  </script>
+</body>
+</html>
