@@ -59,14 +59,20 @@ export default defineConfig(() => {
               if (!fs.existsSync(rootAssets)) fs.mkdirSync(rootAssets, { recursive: true });
               const files = fs.readdirSync(distAssets);
               for (const file of files) {
-                fs.copyFileSync(path.join(distAssets, file), path.join(rootAssets, file));
-                if (file.endsWith('.js')) {
-                  fs.copyFileSync(path.join(distAssets, file), path.join(rootAssets, 'app.js'));
-                  fs.copyFileSync(path.join(distAssets, file), path.join(rootAssets, 'index.js'));
-                }
-                if (file.endsWith('.css')) {
-                  fs.copyFileSync(path.join(distAssets, file), path.join(rootAssets, 'app.css'));
-                  fs.copyFileSync(path.join(distAssets, file), path.join(rootAssets, 'index.css'));
+                const srcPath = path.join(distAssets, file);
+                const destPath = path.join(rootAssets, file);
+                if (fs.statSync(srcPath).isDirectory()) {
+                  fs.cpSync(srcPath, destPath, { recursive: true });
+                } else {
+                  fs.copyFileSync(srcPath, destPath);
+                  if (file.endsWith('.js')) {
+                    fs.copyFileSync(srcPath, path.join(rootAssets, 'app.js'));
+                    fs.copyFileSync(srcPath, path.join(rootAssets, 'index.js'));
+                  }
+                  if (file.endsWith('.css')) {
+                    fs.copyFileSync(srcPath, path.join(rootAssets, 'app.css'));
+                    fs.copyFileSync(srcPath, path.join(rootAssets, 'index.css'));
+                  }
                 }
               }
             }

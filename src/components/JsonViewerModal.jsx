@@ -12,9 +12,9 @@ export const JsonViewerModal = ({
 
   const jsonContent = JSON.stringify(
     {
-      version: '1.0.0',
-      name: 'Vault Unblocked Games Hub',
-      description: 'Collection of unblocked web games rendered directly via iframe containers defined in this JSON database.',
+      version: '1.2.0',
+      name: 'C00K13 Unblocked Games Hub',
+      description: 'Collection of 23 unblocked web games rendered directly via iframe containers defined in this JSON database.',
       totalGames: games.length,
       games: games,
     },
