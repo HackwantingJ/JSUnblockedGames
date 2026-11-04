@@ -25,8 +25,8 @@ export const WelcomeTour = ({ isOpen, onClose, onFinish }) => {
       badgeIcon: Calculator,
       title: 'Secret Calculator Disguise',
       subtitle:
-        'C00K13 opens disguised as a fully functional standard and scientific calculator. Enter your secret PIN 6692 and click = anytime to unlock your games vault.',
-      highlight: 'Secret PIN: 6692',
+        'C00K13 opens disguised as a fully functional standard and scientific calculator. Enter your secret PIN 1865 and click = anytime to unlock your games vault.',
+      highlight: 'Secret PIN: 1865',
     },
     {
       badgeIcon: ShieldAlert,

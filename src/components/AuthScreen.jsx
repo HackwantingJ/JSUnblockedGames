@@ -60,16 +60,11 @@ export const AuthScreen = ({ onAuthSuccess, onLockToCalculator }) => {
         return;
       }
 
-      if (!is13OrOlder) {
-        setError('You must be 13 or older to create an account.');
-        return;
-      }
-
       const newUser = {
         username: cleanUser,
         email: email.trim(),
         password: cleanPass,
-        is13OrOlder,
+        is13OrOlder: Boolean(is13OrOlder),
         createdAt: new Date().toISOString(),
       };
 

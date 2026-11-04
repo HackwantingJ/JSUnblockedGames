@@ -10,7 +10,8 @@ import {
   Check,
   ExternalLink,
   Keyboard,
-  Info
+  Info,
+  Link2,
 } from 'lucide-react';
 
 export const GamePlayer = ({
@@ -18,10 +19,12 @@ export const GamePlayer = ({
   isFavorite,
   onClose,
   onToggleFavorite,
+  onOpenCustomLink,
 }) => {
   const [isTheater, setIsTheater] = useState(false);
   const [showJsonCode, setShowJsonCode] = useState(false);
   const [copiedCode, setCopiedCode] = useState(false);
+  const [copiedLink, setCopiedLink] = useState(false);
   const [iframeKey, setIframeKey] = useState(0);
   const containerRef = useRef(null);
   const iframeRef = useRef(null);
@@ -50,6 +53,16 @@ export const GamePlayer = ({
     navigator.clipboard.writeText(formatted);
     setCopiedCode(true);
     setTimeout(() => setCopiedCode(false), 2000);
+  };
+
+  // Copy Direct Custom Link to this game
+  const copyDirectLink = () => {
+    const origin = window.location.origin;
+    const pathname = window.location.pathname;
+    const directUrl = `${origin}${pathname}?game=${encodeURIComponent(game.id)}&pass=1865`;
+    navigator.clipboard?.writeText(directUrl);
+    setCopiedLink(true);
+    setTimeout(() => setCopiedLink(false), 2500);
   };
 
   // Keyboard shortcut: Escape closes theater or game if not in fullscreen
@@ -135,6 +148,19 @@ export const GamePlayer = ({
             className="hidden sm:inline-flex p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors focus:outline-none"
           >
             <ExternalLink className="w-4 h-4" />
+          </button>
+
+          <button
+            onClick={copyDirectLink}
+            title={copiedLink ? 'Custom link copied!' : 'Copy direct link to this game (?pass=1865)'}
+            className={`p-2 rounded-lg transition-colors focus:outline-none flex items-center gap-1 text-xs font-semibold ${
+              copiedLink
+                ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+                : 'text-slate-400 hover:text-white hover:bg-slate-800'
+            }`}
+          >
+            {copiedLink ? <Check className="w-4 h-4 text-emerald-400" /> : <Link2 className="w-4 h-4 text-[#ff5b79]" />}
+            <span className="hidden md:inline">{copiedLink ? 'Copied Link!' : 'Share Link'}</span>
           </button>
 
           <button

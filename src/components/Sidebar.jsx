@@ -13,10 +13,13 @@ import {
   User,
   LogOut,
   Code2,
+  MessageSquare,
+  Globe,
+  Link2,
 } from 'lucide-react';
 
 export const Sidebar = ({
-  activeView, // 'games' | 'ai'
+  activeView, // 'games' | 'ai' | 'chat' | 'browser'
   onSelectView,
   selectedTab,
   onSelectTab,
@@ -26,6 +29,7 @@ export const Sidebar = ({
   isCollapsed,
   onToggleCollapse,
   onOpenCloak,
+  onOpenCustomLink,
   onOpenTour,
   onTriggerPanic,
   onLock,
@@ -128,7 +132,59 @@ export const Sidebar = ({
             )}
           </button>
 
-          {/* 3. Favorites Quick Filter */}
+          {/* 3. Discord-Style Community Chat (13+) */}
+          <button
+            onClick={() => onSelectView('chat')}
+            title="C00K13 Discord Lounge Chat (Age 13+)"
+            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-2xl font-bold text-xs transition-all ${
+              activeView === 'chat'
+                ? 'bg-gradient-to-r from-[#ff5b79] to-[#d93858] text-white shadow-lg shadow-[#ff5b79]/25'
+                : 'text-slate-300 hover:text-white hover:bg-[#1f1019]'
+            }`}
+          >
+            <MessageSquare className="w-5 h-5 text-indigo-400 group-hover:text-white shrink-0" />
+            {!isCollapsed && (
+              <div className="flex-1 flex items-center justify-between text-left">
+                <span className="flex items-center gap-1.5">
+                  <span>Chat</span>
+                  <span className="text-[9px] px-1 py-0.2 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 uppercase font-mono">
+                    13+
+                  </span>
+                </span>
+                <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-[#ff5b79]/20 text-[#ff5b79] font-mono font-semibold">
+                  #lounge
+                </span>
+              </div>
+            )}
+          </button>
+
+          {/* 4. C00K13 Search & Proxy Browser (DuckDuckGo) */}
+          <button
+            onClick={() => onSelectView('browser')}
+            title="c00k13 search - Unblocked DuckDuckGo Proxy Browser"
+            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-2xl font-bold text-xs transition-all ${
+              activeView === 'browser'
+                ? 'bg-gradient-to-r from-[#de5833] to-[#ff5b79] text-white shadow-lg shadow-[#de5833]/25'
+                : 'text-slate-300 hover:text-white hover:bg-[#1f1019]'
+            }`}
+          >
+            <Globe className="w-5 h-5 text-[#de5833] group-hover:text-white shrink-0" />
+            {!isCollapsed && (
+              <div className="flex-1 flex items-center justify-between text-left">
+                <span className="flex items-center gap-1.5">
+                  <span>Search</span>
+                  <span className="text-[9px] px-1 py-0.2 rounded bg-[#de5833]/20 text-[#de5833] border border-[#de5833]/30 uppercase font-mono">
+                    DuckDuckGo
+                  </span>
+                </span>
+                <span className="text-[10px] font-mono text-slate-400">
+                  Proxy
+                </span>
+              </div>
+            )}
+          </button>
+
+          {/* 5. Favorites Quick Filter */}
           <button
             onClick={() => {
               onSelectView('games');
@@ -191,7 +247,7 @@ export const Sidebar = ({
           {/* 5. Stealth Calculator Lock */}
           <button
             onClick={onLock}
-            title="Lock back to Calculator disguise (Code 6692)"
+            title="Lock back to Calculator disguise (Code 1865)"
             className="w-full flex items-center gap-3 px-3 py-2 rounded-2xl text-xs font-medium text-slate-400 hover:text-white hover:bg-[#1a0e16] transition-all"
           >
             <CalcIcon className="w-4 h-4 text-[#ff5b79] shrink-0" />
@@ -208,7 +264,17 @@ export const Sidebar = ({
             {!isCollapsed && <span>Tab Cloaking</span>}
           </button>
 
-          {/* 7. Welcome Tour */}
+          {/* 7. Custom Link Generator */}
+          <button
+            onClick={onOpenCustomLink}
+            title="Create custom shareable links, direct game URLs & GitHub Pages domains"
+            className="w-full flex items-center gap-3 px-3 py-2 rounded-2xl text-xs font-medium text-slate-400 hover:text-white hover:bg-[#1a0e16] transition-all"
+          >
+            <Link2 className="w-4 h-4 text-emerald-400 shrink-0" />
+            {!isCollapsed && <span>Custom Link</span>}
+          </button>
+
+          {/* 8. Welcome Tour */}
           <button
             onClick={onOpenTour}
             title="Open Welcome Tour"
@@ -218,7 +284,7 @@ export const Sidebar = ({
             {!isCollapsed && <span>Welcome Tour</span>}
           </button>
 
-          {/* 8. Panic Button */}
+          {/* 9. Panic Button */}
           <button
             onClick={onTriggerPanic}
             title="Instant AP Biology disguise screen (Key: `)"

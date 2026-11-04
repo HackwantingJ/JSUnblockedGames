@@ -9,14 +9,18 @@ import {
   User,
   Gamepad2,
   Menu,
+  MessageSquare,
+  Globe,
+  Link2,
 } from 'lucide-react';
 
 export const Navbar = ({
   user,
-  activeView, // 'games' | 'ai'
+  activeView, // 'games' | 'ai' | 'chat' | 'browser'
   onSelectView,
   onToggleSidebar,
   onOpenCloak,
+  onOpenCustomLink,
   onOpenAddGame,
   onOpenTour,
   onTriggerPanic,
@@ -72,7 +76,33 @@ export const Navbar = ({
               }`}
             >
               <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-              <span>CRUM3L AI</span>
+              <span>CRUM3L</span>
+            </button>
+
+            <button
+              onClick={() => onSelectView('chat')}
+              className={`flex items-center gap-1.5 px-3 py-1 text-xs font-bold rounded-xl transition-all ${
+                activeView === 'chat'
+                  ? 'bg-[#ff5b79] text-white shadow-md shadow-[#ff5b79]/20'
+                  : 'text-slate-400 hover:text-white hover:bg-[#22121c]'
+              }`}
+            >
+              <MessageSquare className="w-3.5 h-3.5 text-indigo-400" />
+              <span>Chat</span>
+              <span className="text-[9px] px-1 py-0.2 rounded bg-indigo-500/20 text-indigo-300 font-mono">13+</span>
+            </button>
+
+            <button
+              onClick={() => onSelectView('browser')}
+              className={`flex items-center gap-1.5 px-3 py-1 text-xs font-bold rounded-xl transition-all ${
+                activeView === 'browser'
+                  ? 'bg-[#de5833] text-white shadow-md shadow-[#de5833]/20'
+                  : 'text-slate-400 hover:text-white hover:bg-[#22121c]'
+              }`}
+              title="c00k13 search - DuckDuckGo Proxy"
+            >
+              <Globe className="w-3.5 h-3.5 text-orange-400" />
+              <span>Search</span>
             </button>
           </div>
         </div>
@@ -89,6 +119,16 @@ export const Navbar = ({
             <span>Tour</span>
           </button>
 
+          {/* Custom Link Generator */}
+          <button
+            onClick={onOpenCustomLink}
+            title="Create Custom Link (Direct URL, PIN Bypass & GitHub Pages)"
+            className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold text-[#ff5b79] bg-[#ff5b79]/10 hover:bg-[#ff5b79]/20 border border-[#ff5b79]/30 rounded-xl transition-all"
+          >
+            <Link2 className="w-3.5 h-3.5" />
+            <span>Custom Link</span>
+          </button>
+
           {/* Tab Cloak */}
           <button
             onClick={onOpenCloak}
@@ -102,7 +142,7 @@ export const Navbar = ({
           {/* Calculator Lock */}
           <button
             onClick={onLock}
-            title="Lock back to Calculator disguise (Code: 6692)"
+            title="Lock back to Calculator disguise (Code: 1865)"
             className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-slate-300 bg-[#160d13] hover:bg-[#23151f] border border-[#2b1722] rounded-xl transition-colors"
           >
             <CalcIcon className="w-3.5 h-3.5 text-[#ff5b79]" />

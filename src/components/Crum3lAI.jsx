@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import { generateCrum3lFallbackResponse } from '../data/crum3lEngine.js';
 
-export const Crum3lAI = ({ onLaunchGame, activeGameTitle }) => {
+export const Crum3lAI = ({ onLaunchGame, activeGameTitle, username = 'Gamer' }) => {
   const [messages, setMessages] = useState(() => {
     try {
       const saved = sessionStorage.getItem('c00k13_crum3l_chat');
@@ -26,7 +26,7 @@ export const Crum3lAI = ({ onLaunchGame, activeGameTitle }) => {
       {
         id: 'initial',
         role: 'assistant',
-        text: `Hey there! I'm **CRUM3L**, your built-in C00K13 companion. 🍪\n\nAsk me anything: game walkthroughs (Minecraft, Cuphead, Skate 3, FNAF, Ultrakill, DOOM, 2048), homework & science questions, coding tips, or secret tricks!\n\nWhat can I help you conquer today?`,
+        text: `Hey ${username}! I'm **CRUM3L**, your built-in C00K13 companion. 🍪\n\nAsk me anything: game walkthroughs (Minecraft, Cuphead, Skate 3, FNAF, Ultrakill, DOOM, 2048), math calculations (e.g. \`25 * 14\` or solve equations), science notes, or coding help!\n\nWhat are you curious about today?`,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       },
     ];
@@ -96,14 +96,14 @@ export const Crum3lAI = ({ onLaunchGame, activeGameTitle }) => {
           replyText = data.reply;
         } else {
           // Fallback if no API key is on server
-          replyText = generateCrum3lFallbackResponse(query);
+          replyText = generateCrum3lFallbackResponse(query, username);
         }
       } else {
-        replyText = generateCrum3lFallbackResponse(query);
+        replyText = generateCrum3lFallbackResponse(query, username);
       }
     } catch {
       // 2. Seamless client fallback engine for static deployments / GitHub Pages
-      replyText = generateCrum3lFallbackResponse(query);
+      replyText = generateCrum3lFallbackResponse(query, username);
     }
 
     const aiMessage = {

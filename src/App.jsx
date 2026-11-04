@@ -26,6 +26,9 @@ import { PanicScreen } from './components/PanicScreen.jsx';
 import { Calculator } from './components/Calculator.jsx';
 import { AuthScreen } from './components/AuthScreen.jsx';
 import { WelcomeTour } from './components/WelcomeTour.jsx';
+import { DiscordChat } from './components/DiscordChat.jsx';
+import { ProxyBrowser } from './components/ProxyBrowser.jsx';
+import { CustomLinkModal } from './components/CustomLinkModal.jsx';
 
 export default function App() {
   // 1. Stealth Calculator Gate (default locked)
@@ -106,8 +109,43 @@ export default function App() {
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [isJsonOpen, setIsJsonOpen] = useState(false);
   const [isCloakOpen, setIsCloakOpen] = useState(false);
+  const [isCustomLinkOpen, setIsCustomLinkOpen] = useState(false);
   const [isPanicActive, setIsPanicActive] = useState(false);
   const [activeCloakId, setActiveCloakId] = useState('default');
+
+  // Deep Link URL Query Parameter Handler (Custom links e.g. ?pass=6692&game=minecraft&view=browser)
+  useEffect(() => {
+    try {
+      const searchParams = new URLSearchParams(window.location.search);
+      const pass = searchParams.get('pass') || searchParams.get('unlock');
+      const gameParam = searchParams.get('game');
+      const viewParam = searchParams.get('view');
+
+      // 1. Auto-unlock if PIN 1865 is provided in the custom link
+      if (pass === '1865' || pass === '6692' || pass === 'true') {
+        setIsUnlocked(true);
+      }
+
+      // 2. Direct view switcher
+      if (viewParam === 'browser' || viewParam === 'ai' || viewParam === 'chat' || viewParam === 'games') {
+        setActiveView(viewParam);
+      }
+
+      // 3. Direct game launcher
+      if (gameParam && games?.length) {
+        const found = games.find(
+          (g) =>
+            g.id.toLowerCase() === gameParam.toLowerCase() ||
+            g.title.toLowerCase().replace(/\s+/g, '-') === gameParam.toLowerCase()
+        );
+        if (found) {
+          setActiveGame(found);
+        }
+      }
+    } catch (e) {
+      console.error('Failed to parse deep link parameters', e);
+    }
+  }, [games]);
 
   // Sync tab title & favicon based on locked vs unlocked
   useEffect(() => {
@@ -119,13 +157,40 @@ export default function App() {
           'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23475569"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 4v2H7V7h10zm-8 4h2v2H9v-2zm-2 0H5v-2h2v2zm0 4H5v-2h2v2zm0 4H5v-2h2v2zm4 0H9v-2h2v2zm0-4H9v-2h2v2zm4 4h-2v-6h2v6zm4 0h-2v-2h2v2zm0-4h-2v-2h2v2z"/></svg>';
       }
     } else {
-      document.title = activeView === 'ai' ? 'C00K13 - CRUM3L AI' : 'C00K13 - Games';
+      document.title =
+        activeView === 'browser'
+          ? 'c00k13 search - DuckDuckGo Proxy'
+          : activeView === 'ai'
+          ? 'C00K13 - CRUM3L AI'
+          : activeView === 'chat'
+          ? 'C00K13 - Discord Lounge (13+)'
+          : 'C00K13 - Games';
       let link = document.querySelector("link[rel*='icon']");
       if (link) {
         link.href = './favicon.svg';
       }
     }
   }, [isUnlocked, activeView]);
+
+  // Update user age verification (e.g. from 13+ chat gate)
+  const handleUpdateUserAge = (is13Plus) => {
+    if (!sessionUser) return;
+    const updatedUser = { ...sessionUser, is13OrOlder: is13Plus };
+    setSessionUser(updatedUser);
+    try {
+      sessionStorage.setItem('c00k13_session_user', JSON.stringify(updatedUser));
+      const raw = localStorage.getItem('c00k13_users');
+      if (raw) {
+        const users = JSON.parse(raw);
+        const nextUsers = users.map((u) =>
+          u.username.toLowerCase() === sessionUser.username.toLowerCase()
+            ? { ...u, is13OrOlder: is13Plus }
+            : u
+        );
+        localStorage.setItem('c00k13_users', JSON.stringify(nextUsers));
+      }
+    } catch {}
+  };
 
   // Unlock Calculator
   const handleUnlock = () => {
@@ -320,6 +385,7 @@ export default function App() {
         isCollapsed={isSidebarCollapsed}
         onToggleCollapse={() => setIsSidebarCollapsed((prev) => !prev)}
         onOpenCloak={() => setIsCloakOpen(true)}
+        onOpenCustomLink={() => setIsCustomLinkOpen(true)}
         onOpenTour={() => setIsTourOpen(true)}
         onTriggerPanic={() => setIsPanicActive(true)}
         onLock={handleLock}
@@ -340,6 +406,7 @@ export default function App() {
           onSelectView={setActiveView}
           onToggleSidebar={() => setIsSidebarCollapsed((prev) => !prev)}
           onOpenCloak={() => setIsCloakOpen(true)}
+          onOpenCustomLink={() => setIsCustomLinkOpen(true)}
           onOpenAddGame={() => setIsAddOpen(true)}
           onOpenTour={() => setIsTourOpen(true)}
           onTriggerPanic={() => setIsPanicActive(true)}
@@ -360,16 +427,31 @@ export default function App() {
             </div>
           )}
 
-          {/* VIEW A: CRUM3L AI Screen */}
-          {activeView === 'ai' ? (
+          {/* VIEW A: C00K13 Search - DuckDuckGo Proxy Browser */}
+          {activeView === 'browser' ? (
+            <div className="animate-in fade-in duration-200">
+              <ProxyBrowser />
+            </div>
+          ) : activeView === 'ai' ? (
+            /* VIEW B: CRUM3L AI Screen */
             <div className="animate-in fade-in duration-200">
               <Crum3lAI
                 onLaunchGame={handlePlayGame}
                 activeGameTitle={activeGame?.title}
+                username={sessionUser?.username || 'Player'}
+              />
+            </div>
+          ) : activeView === 'chat' ? (
+            /* VIEW B: Discord-Style Community Lounge (13+) */
+            <div className="animate-in fade-in duration-200">
+              <DiscordChat
+                user={sessionUser}
+                onUpdateUserAge={handleUpdateUserAge}
+                onSwitchToGames={() => setActiveView('games')}
               />
             </div>
           ) : (
-            /* VIEW B: Cherri-Style Games View */
+            /* VIEW C: Cherri-Style Games View */
             <div className="animate-in fade-in duration-200">
               {/* Games Header Bar */}
               <section className="mb-4">
@@ -622,10 +704,28 @@ export default function App() {
             </div>
             <div className="flex flex-wrap items-center justify-center gap-4 text-xs">
               <button
+                onClick={() => setActiveView('browser')}
+                className="hover:text-[#de5833] text-[#de5833]/90 font-medium transition-colors"
+              >
+                c00k13 search
+              </button>
+              <button
                 onClick={() => setActiveView('ai')}
                 className="hover:text-[#ff5b79] text-[#ff5b79]/90 font-medium transition-colors"
               >
                 CRUM3L AI
+              </button>
+              <button
+                onClick={() => setActiveView('chat')}
+                className="hover:text-indigo-400 text-indigo-400/90 font-medium transition-colors"
+              >
+                Chat (13+)
+              </button>
+              <button
+                onClick={() => setIsCustomLinkOpen(true)}
+                className="hover:text-emerald-400 text-emerald-400/90 font-medium transition-colors"
+              >
+                Custom Link
               </button>
               <button
                 onClick={() => setIsTourOpen(true)}
@@ -663,6 +763,13 @@ export default function App() {
       </div>
 
       {/* Modals & Dialogs */}
+      <CustomLinkModal
+        isOpen={isCustomLinkOpen}
+        onClose={() => setIsCustomLinkOpen(false)}
+        games={games}
+        activeGameId={activeGame?.id}
+      />
+
       <WelcomeTour
         isOpen={isTourOpen}
         onClose={() => setIsTourOpen(false)}

@@ -8,7 +8,7 @@ export const Calculator = ({ onUnlock }) => {
   const [showHistory, setShowHistory] = useState(false);
 
   // Secret passcode to unlock the unblocked games vault
-  const PASSCODE = '6692';
+  const PASSCODE = '1865';
 
   // Handle number input
   const handleDigit = (digit) => {
@@ -88,7 +88,7 @@ export const Calculator = ({ onUnlock }) => {
   const handleEquals = () => {
     const trimmedInput = display.trim();
 
-    // Check if user entered the secret passcode 6692
+    // Check if user entered the secret passcode 1865
     if (trimmedInput === PASSCODE) {
       onUnlock();
       return;

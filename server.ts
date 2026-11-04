@@ -76,6 +76,49 @@ Keep your answers sharp, clear, helpful, and formatted with clean markdown, list
   }
 });
 
+// Proxy Browser Web Endpoint (strips X-Frame-Options & injects base tag)
+app.get('/api/proxy', async (req, res) => {
+  try {
+    const targetUrl = req.query.url as string;
+    if (!targetUrl) {
+      return res.status(400).send('URL query parameter is required');
+    }
+
+    let validUrl = targetUrl.trim();
+    if (!validUrl.startsWith('http://') && !validUrl.startsWith('https://')) {
+      validUrl = 'https://' + validUrl;
+    }
+
+    const response = await fetch(validUrl, {
+      headers: {
+        'User-Agent':
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+      },
+    });
+
+    const contentType = response.headers.get('content-type') || 'text/html';
+    res.setHeader('Content-Type', contentType);
+    res.removeHeader('X-Frame-Options');
+    res.removeHeader('Content-Security-Policy');
+
+    if (contentType.includes('text/html')) {
+      let html = await response.text();
+      const origin = new URL(validUrl).origin;
+      if (!html.includes('<base')) {
+        html = html.replace(/<head[^>]*>/i, `$&<base href="${origin}/">`);
+      }
+      return res.send(html);
+    }
+
+    const arrayBuffer = await response.arrayBuffer();
+    return res.send(Buffer.from(arrayBuffer));
+  } catch (err: any) {
+    console.error('Proxy error:', err);
+    return res.status(500).send(`Proxy could not load page: ${err.message}`);
+  }
+});
+
 // Dev vs Production middleware mounting
 if (process.env.NODE_ENV !== 'production') {
   const { createServer } = await import('vite');
