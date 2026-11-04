@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sparkles, X, Gamepad2, Calculator, ShieldAlert, Zap, ArrowRight, Check } from 'lucide-react';
+import { Sparkles, X, Gamepad2, Calculator, ShieldAlert, Zap, ArrowRight, Check, Cookie } from 'lucide-react';
 
 export const WelcomeTour = ({ isOpen, onClose, onFinish }) => {
   const [currentStep, setCurrentStep] = useState(0);
@@ -34,6 +34,13 @@ export const WelcomeTour = ({ isOpen, onClose, onFinish }) => {
       subtitle:
         'Hit the ` (Tilde) key at any instant to display AP Biology study notes. Use Tab Cloak to disguise your tab as Google Classroom, Google Docs, or Drive.',
       highlight: 'Key: ` (Tilde)',
+    },
+    {
+      badgeIcon: Cookie,
+      title: 'Meet CRUM3L AI',
+      subtitle:
+        'Your built-in gaming and homework AI companion powered by Gemini. Click the CRUM3L icon in the sidebar anytime for Minecraft walkthroughs, 2048 strategy, Skate 3 tricks, or step-by-step math help.',
+      highlight: 'Built-in Gemini AI',
     },
   ];
 
